@@ -1,2 +1,0 @@
-# Calculadora
-Diferentes operaciones
