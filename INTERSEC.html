@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagramas de Venn - Conjuntos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #dd6243 0%, #4946e8 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 30px;
+            gap: 30px;
+        }
+
+        .input-section {
+            flex: 1;
+            min-width: 300px;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .visualization-section {
+            flex: 2;
+            min-width: 400px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .venn-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .venn-diagram {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .circle-a {
+            background: rgba(52, 152, 219, 0.6);
+            border: 3px solid #2980b9;
+            width: 300px;
+            height: 300px;
+            top: 100px;
+            left: 100px;
+        }
+
+        .circle-b {
+            background: rgba(231, 76, 60, 0.6);
+            border: 3px solid #c0392b;
+            width: 300px;
+            height: 300px;
+            top: 100px;
+            left: 300px;
+        }
+
+        .elements {
+            position: absolute;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 5px 10px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .only-a { color: #2980b9; }
+        .only-b { color: #c0392b; }
+        .intersection { color: #8e44ad; }
+        .outside { color: #7f8c8d; }
+
+        .results {
+            margin-top: 20px;
+            padding: 20px;
+            background: #ecf0f1;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .results h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .result-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #547ab8;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #5c7de1;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .circle-a, .circle-b {
+                position: relative;
+                margin: 10px auto;
+                left: auto;
+                top: auto;
+            }
+            
+            .venn-container {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> Diagramas de Venn</h1>
+            <p>Intersección de conjuntos</p>
+        </div>
+
+        <div class="content">
+            <div class="input-section">
+                <div class="form-group">
+                    <label for="conjuntoA">Conjunto A :</label>
+                    <input type="text" id="conjuntoA" placeholder="Ej: 1, 2, 3, 4, 5" value="1, 3, 5, 7, 9">
+                </div>
+
+                <div class="form-group">
+                    <label for="conjuntoB">Conjunto B :</label>
+                    <input type="text" id="conjuntoB" placeholder="Ej: 4, 5, 6, 7, 8" value="2, 3, 5, 7, 11">
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="calcularConjuntos()"> Calcular</button>
+                    <button class="btn-warning" onclick="visualizarInterseccion()">∩ Intersección</button>
+                    <button class="btn-danger" onclick="limpiarConjuntos()"> Limpiar</button>
+                </div>
+
+                <div class="results" id="resultados">
+                    <h3>Resultados:</h3>
+                    <div id="resultContent">
+                        <!-- Los resultados aparecerán aquí -->
+                    </div>
+                </div>
+
+                <a href="javascript:history.back()" class="back-button">← Volver al Menú Principal</a>
+            </div>
+
+            <div class="visualization-section">
+                <h3 style="text-align: center; margin-bottom: 20px; color: #2c3e50;"> Diagrama de Venn</h3>
+                <div class="venn-container">
+                    <div class="venn-diagram" id="vennDiagram">
+                        <!-- El diagrama se generará aquí -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function parseConjunto(inputId) {
+            const input = document.getElementById(inputId).value;
+            return input.split(',')
+                .map(item => item.trim())
+                .filter(item => item !== "" && !isNaN(item));
+        }
+
+        function calcularConjuntos() {
+            const conjuntoA = parseConjunto('conjuntoA');
+            const conjuntoB = parseConjunto('conjuntoB');
+
+            if (conjuntoA.length === 0 || conjuntoB.length === 0) {
+                alert('Por favor ingresa elementos válidos en ambos conjuntos');
+                return;
+            }
+
+            // Calcular operaciones
+            const union = [...new Set([...conjuntoA, ...conjuntoB])];
+            const interseccion = conjuntoA.filter(item => conjuntoB.includes(item));
+            const soloA = conjuntoA.filter(item => !conjuntoB.includes(item));
+            const soloB = conjuntoB.filter(item => !conjuntoA.includes(item));
+
+            // Mostrar resultados
+            const resultContent = document.getElementById('resultContent');
+            resultContent.innerHTML = `
+           <div class="result-item">
+                    <strong>Conjunto A:</strong> {${soloA.length > 0 ? soloA.join(', ') : '∅'}}
+                </div>
+                <div class="result-item">
+                    <strong>Conjunto B:</strong> {${soloB.length > 0 ? soloB.join(', ') : '∅'}}
+                </div>
+                <div class="result-item">
+                    <strong>Intersección A ∩ B:</strong> {${interseccion.length > 0 ? interseccion.join(', ') : '∅'}}
+                </div>
+            `;
+
+            // Dibujar diagrama
+            dibujarDiagramaVenn(conjuntoA, conjuntoB, soloA, soloB, interseccion);
+        }
+
+        function dibujarDiagramaVenn(conjuntoA, conjuntoB, soloA, soloB, interseccion) {
+            const vennDiagram = document.getElementById('vennDiagram');
+            vennDiagram.innerHTML = '';
+
+            // Crear círculos
+            const circleA = document.createElement('div');
+            circleA.className = 'circle circle-a';
+            circleA.textContent = 'A';
+            vennDiagram.appendChild(circleA);
+
+            const circleB = document.createElement('div');
+            circleB.className = 'circle circle-b';
+            circleB.textContent = 'B';
+            vennDiagram.appendChild(circleB);
+
+            // Posicionar elementos
+            posicionarElementos(soloA, 'only-a', 175, 225);
+            posicionarElementos(interseccion, 'intersection', 340, 225);
+            posicionarElementos(soloB, 'only-b', 480, 200);
+
+            function posicionarElementos(elementos, className, xBase, yBase) {
+                elementos.forEach((elemento, index) => {
+                    const elemDiv = document.createElement('div');
+                    elemDiv.className = `elements ${className}`;
+                    elemDiv.textContent = elemento;
+                    
+                    // Posición aleatoria dentro del área
+                    const x = xBase + (Math.random() * 80 - 40);
+                    const y = yBase + (Math.random() * 80 - 40);
+                    
+                    elemDiv.style.left = x + 'px';
+                    elemDiv.style.top = y + 'px';
+                    
+                    vennDiagram.appendChild(elemDiv);
+                });
+            }
+        }
+
+        
+
+        function visualizarInterseccion() {
+            const conjuntoA = parseConjunto('conjuntoA');
+            const conjuntoB = parseConjunto('conjuntoB');
+            
+            if (conjuntoA.length === 0 || conjuntoB.length === 0) {
+                alert('Por favor ingresa elementos válidos en ambos conjuntos');
+                return;
+            }
+
+            const interseccion = conjuntoA.filter(item => conjuntoB.includes(item));
+            if (interseccion.length === 0) {
+                alert('Intersección A ∩ B = ∅ (conjunto vacío)');
+            } else {
+                alert(`Intersección A ∩ B = {${interseccion.join(', ')}}`);
+            }
+            
+            // Resaltar visualmente la intersección
+            dibujarDiagramaVenn(conjuntoA, conjuntoB, 
+                conjuntoA.filter(item => !conjuntoB.includes(item)),
+                conjuntoB.filter(item => !conjuntoA.includes(item)),
+                interseccion
+            );
+        }
+
+        function limpiarConjuntos() {
+            document.getElementById('conjuntoA').value = '';
+            document.getElementById('conjuntoB').value = '';
+            document.getElementById('resultContent').innerHTML = '';
+            document.getElementById('vennDiagram').innerHTML = '';
+        }
+
+        // Calcular automáticamente al cargar la página
+        window.onload = calcularConjuntos;
+    </script>
+</body>
+</html>

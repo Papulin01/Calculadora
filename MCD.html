@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máximo Común Divisor </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            text-align: center;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.1"><text x="50%" y="50%" font-size="20" text-anchor="middle" dominant-baseline="middle" fill="white">🔢</text></svg>');
+            background-size: 80px;
+            opacity: 0.1;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        input {
+            padding: 15px 15px 15px 50px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            width: 100%;
+            background: #f8f9fa;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            background: white;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-calculate {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+        
+        .btn-calculate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn-clear {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+        
+        .btn-clear:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+        }
+        
+        .results {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .results h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.8em;
+            border-bottom: 2px solid #e17055;
+            padding-bottom: 10px;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .result-item {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-value {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+        
+        .mcd-result {
+            grid-column: 1 / -1;
+            text-align: center;
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 20px;
+        }
+        
+        .mcd-result .result-value {
+            color: white;
+            font-size: 2em;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .process-section {
+            margin-top: 30px;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .process-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.8em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .process-step {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #3498db;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .step-number {
+            background: #3498db;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #636e72 0%, #2d3436 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .numbers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-calculator"></i> Máximo Común Divisor</h1>
+            <p>Calcula el MCD</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <div class="numbers-grid">
+                    <div class="input-group">
+                        <label for="num1">Primer número:</label>
+                        <div class="input-with-icon">
+                            <input type="number" id="num1" min="1" placeholder="">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="num2">Segundo número:</label>
+                        <div class="input-with-icon">
+                            <input type="number" id="num2" min="1" placeholder="">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="num3">Tercer número:</label>
+                        <div class="input-with-icon">
+                            <input type="number" id="num3" min="1" placeholder="">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn-calculate" onclick="calcularMCD()">
+                        <i class=""></i> Calcular
+                    </button>
+                    <button class="btn-clear" onclick="limpiar()">
+                        <i class=""></i> Borrar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="results" id="results">
+                <h2><i class=""></i> Resultados</h2>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <strong>Número 1:</strong> <span class="result-value" id="result-num1"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>Número 2:</strong> <span class="result-value" id="result-num2"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>Número 3:</strong> <span class="result-value" id="result-num3"></span>
+                    </div>
+                    <div class="mcd-result">
+                        <strong>Máximo Común Divisor:</strong> <span class="result-value" id="result-mcd"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="process-section" id="process">
+                <h2><i class=""></i> Proceso de Cálculo</h2>
+                <div id="process-steps"></div>
+            </div>
+            
+            <div class="navigation">
+                <a href="javascript:history.back()" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Volver al Menú Principal
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para calcular MCD de dos números usando algoritmo de Euclides
+        function calcularMCDDosNumeros(a, b) {
+            while (b !== 0) {
+                let temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+        
+        // Función para calcular MCD de tres números
+        function calcularMCDTresNumeros(a, b, c) {
+            // Primero calculamos MCD de a y b
+            let mcdAB = calcularMCDDosNumeros(a, b);
+            // Luego calculamos MCD del resultado anterior con c
+            let mcdFinal = calcularMCDDosNumeros(mcdAB, c);
+            return mcdFinal;
+        }
+        
+        function calcularMCD() {
+            // Obtener valores de los inputs
+            let num1 = parseInt(document.getElementById('num1').value);
+            let num2 = parseInt(document.getElementById('num2').value);
+            let num3 = parseInt(document.getElementById('num3').value);
+            
+            // Validar que los números sean válidos
+            if (isNaN(num1) || isNaN(num2) || isNaN(num3) || 
+                num1 <= 0 || num2 <= 0 || num3 <= 0) {
+                alert("Por favor ingresa números válidos mayores que cero");
+                return;
+            }
+            
+            // Mostrar los números ingresados
+            document.getElementById('result-num1').textContent = num1;
+            document.getElementById('result-num2').textContent = num2;
+            document.getElementById('result-num3').textContent = num3;
+            
+            // Calcular MCD de tres números
+            let pasos = [];
+            
+            // Paso 1: Calcular MCD de los dos primeros números
+            let mcdAB = calcularMCDDosNumeros(num1, num2);
+            pasos.push(`MCD(${num1}, ${num2}) = ${mcdAB}`);
+            
+            // Paso 2: Calcular MCD del resultado anterior con el tercer número
+            let mcdFinal = calcularMCDDosNumeros(mcdAB, num3);
+            pasos.push(`MCD(${mcdAB}, ${num3}) = ${mcdFinal}`);
+            
+            // Mostrar el resultado
+            document.getElementById('result-mcd').textContent = mcdFinal;
+            document.getElementById('results').style.display = 'block';
+            
+            // Mostrar el proceso
+            let processSteps = document.getElementById('process-steps');
+            processSteps.innerHTML = '';
+            pasos.forEach((paso, index) => {
+                let stepElement = document.createElement('div');
+                stepElement.className = 'process-step';
+                stepElement.innerHTML = `
+                    <div class="step-number">${index + 1}</div>
+                    <div>${paso}</div>
+                `;
+                processSteps.appendChild(stepElement);
+            });
+            document.getElementById('process').style.display = 'block';
+        }
+        
+        function limpiar() {
+            // Limpiar inputs
+            document.getElementById('num1').value = '';
+            document.getElementById('num2').value = '';
+            document.getElementById('num3').value = '';
+            
+            // Ocultar resultados
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('process').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
